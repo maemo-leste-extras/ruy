@@ -58,45 +58,14 @@ include(cmake/ruy_cc_library.cmake)
 include(cmake/ruy_cc_binary.cmake)
 include(cmake/ruy_cc_test.cmake)
 
-option(RUY_FIND_CPUINFO "Use find_package to find cpuinfo" OFF)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(CPUINFO REQUIRED IMPORTED_TARGET libcpuinfo)
 
-# Skip cpuinfo if it was already generated, which can happen when ruy is
-# a subdirectory in a wider project that already uses cpuinfo.
-if (NOT TARGET cpuinfo::cpuinfo)
-  if (RUY_FIND_CPUINFO)
-    find_package(cpuinfo REQUIRED)
-  else()
-    # Test if the third_party/cpuinfo submodule was checked out before
-    # adding that subdirectory, so we can do more helpful things below in the
-    # else() block when it's not.
-    set(RUY_CPUINFO_CMAKELISTS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/third_party/cpuinfo/CMakeLists.txt")
-    if (EXISTS "${RUY_CPUINFO_CMAKELISTS_FILE}")
-      # Disabling cpuinfo's tests and benchmarks to prevent a copy of its
-      # googletest dependency getting downloaded into a 'deps' directory in the
-      # source tree!
-      set(CPUINFO_BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
-      set(CPUINFO_BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
-      set(CPUINFO_BUILD_MOCK_TESTS OFF CACHE BOOL "" FORCE)
-      add_subdirectory("third_party/cpuinfo" EXCLUDE_FROM_ALL)
-    else()
-      # third_party/cpuinfo is not checked out. That could be intentional when
-      # ruy is a subdirectory in a wider project that is already providing
-      # the cpuinfo target. Maybe that wider project's CMakeLists is ordered
-      # in such a way that cpuinfo gets generated after ruy. In that case,
-      # it's helpful that we continue silently. In the worst case if the cpuinfo
-      # target never gets defined, ruy will fail to compile.
-      # On the other hand, if ruy is the top-level project here (not part of a
-      # wider project) then nothing will define the cpuinfo target for us,
-      # so we will definitely fail to compile, so we may as well fail right here.
-      if (RUY_IS_TOPLEVEL)
-        message(FATAL_ERROR "This file does not exist:\n${RUY_CPUINFO_CMAKELISTS_FILE}\n"
-                      "That typically means that the git submodules of the ruy "
-                      "repository haven't been checked out. Try this in the ruy "
-                      "git directory:\n  git submodule update --init")
-      endif()
-    endif()
-  endif()
-endif()
+# custom imported target for cpuinfo because we are not using CMake
+# https://git.maemo.org/leste/bugtracker/issues/819
+add_library(cpuinfo::cpuinfo INTERFACE IMPORTED)
+target_link_libraries(cpuinfo::cpuinfo INTERFACE PkgConfig::CPUINFO)
+target_include_directories(cpuinfo::cpuinfo INTERFACE ${CPUINFO_INCLUDE_DIRS})
 
 # googletest is only needed for tests. Projects embedding ruy as a subdirectory
 # and not needing to build ruy tests may proceed without a local checkout of

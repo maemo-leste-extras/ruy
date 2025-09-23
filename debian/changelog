@@ -1,3 +1,9 @@
+libruy (0.0.6) unstable; urgency=medium
+
+  * Use pkgconfig to link against cpuinfo
+
+ -- Sander <code@kroket.io>  Thu, 23 Sep 2025 14:33:36 +0100
+
 libruy (0.0.5) unstable; urgency=medium
 
   * Only pass -mfpu=NEON on 32bit ARM
