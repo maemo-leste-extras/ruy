@@ -1,3 +1,9 @@
+libruy (0.0.7) unstable; urgency=medium
+
+  * Add pkgconfig to deps
+
+ -- Sander <code@kroket.io>  Thu, 23 Sep 2025 14:35:36 +0100
+
 libruy (0.0.6) unstable; urgency=medium
 
   * Use pkgconfig to link against cpuinfo

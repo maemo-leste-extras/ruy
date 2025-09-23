@@ -5,6 +5,7 @@ Maintainer: Sander <code@kroket.io>
 Build-Depends: debhelper (>= 10),
     cmake,
     libcpuinfo-dev,
+    pkg-config,
 Homepage: https://github.com/google/ruy
 XSBC-Bugtracker: https://github.com/google/ruy/issues
 Vcs-Git: https://github.com/maemo-leste-extras/ruy/
@@ -15,4 +16,5 @@ Package: libruy
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
     cpuinfo,
+    pkg-config,
 Description: Matrix multiplication library by Google. Its focus is to cover the matrix multiplication needs of neural network inference engines. Supports ARM.
